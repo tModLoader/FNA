@@ -11,15 +11,16 @@
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
+using static Microsoft.Xna.Framework.Graphics.FNA3D;
 #endregion
 
 namespace Microsoft.Xna.Framework.Graphics
 {
-	internal static class FNA3D
+	public static partial class FNA3D
 	{
 		#region Private Constants
 
-		private const string nativeLibName = "FNA3D";
+		public const string nativeLibName = "FNA3D";
 
 		#endregion
 
@@ -156,12 +157,15 @@ namespace Microsoft.Xna.Framework.Graphics
 		);
 
 		#endregion
+	}
 
+	internal static partial class FNA3D_Impl
+	{
 		#region Driver Functions
 
 		[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
 		public static extern uint FNA3D_PrepareWindowAttributes();
-		
+
 		[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
 		public static extern void FNA3D_GetDrawableSize(
 			IntPtr window,
@@ -813,7 +817,9 @@ namespace Microsoft.Xna.Framework.Graphics
 		);
 
 		#endregion
+	}
 
+	public static partial class FNA3D {
 		#region Debugging
 
 		[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
