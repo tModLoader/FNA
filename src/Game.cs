@@ -232,7 +232,7 @@ namespace Microsoft.Xna.Framework
 
 		#region Public Constructor
 
-		public Game()
+		public Game(bool headlessMode = false)
 		{
 			AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 
@@ -260,9 +260,12 @@ namespace Microsoft.Xna.Framework
 
 			gameTime = new GameTime();
 
-			Window = FNAPlatform.CreateWindow();
-			Mouse.WindowHandle = Window.Handle;
-			TouchPanel.WindowHandle = Window.Handle;
+			if (!headlessMode)
+			{
+				Window = FNAPlatform.CreateWindow();
+				Mouse.WindowHandle = Window.Handle;
+				TouchPanel.WindowHandle = Window.Handle;
+			}
 
 			FrameworkDispatcher.Update();
 
