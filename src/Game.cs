@@ -219,13 +219,6 @@ namespace Microsoft.Xna.Framework
 		private int sleepTimeIndex = 0;
 		private TimeSpan worstCaseSleepPrecision = TimeSpan.FromMilliseconds(1);
 
-		// must be a power of 2 so we can do a bitmask optimization when checking worst case
-		private const int PREVIOUS_SLEEP_TIME_COUNT = 128;
-		private const int SLEEP_TIME_MASK = PREVIOUS_SLEEP_TIME_COUNT - 1;
-		private TimeSpan[] previousSleepTimes = new TimeSpan[PREVIOUS_SLEEP_TIME_COUNT];
-		private int sleepTimeIndex = 0;
-		private TimeSpan worstCaseSleepPrecision = TimeSpan.FromMilliseconds(1);
-
 		private static readonly TimeSpan MaxElapsedTime = TimeSpan.FromMilliseconds(500);
 
 		private bool[] textInputControlDown;
