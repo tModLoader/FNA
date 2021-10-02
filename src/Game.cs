@@ -268,9 +268,6 @@ namespace Microsoft.Xna.Framework
 				previousSleepTimes[i] = TimeSpan.FromMilliseconds(1);
 			}
 
-			textInputControlDown = new bool[FNAPlatform.TextInputCharacters.Length];
-			textInputControlRepeat = new int[FNAPlatform.TextInputCharacters.Length];
-
 			hasInitialized = false;
 			suppressDraw = false;
 			isDisposed = false;
@@ -279,9 +276,7 @@ namespace Microsoft.Xna.Framework
 
 			if (!headlessMode)
 			{
-				Window = FNAPlatform.CreateWindow();
-				Mouse.WindowHandle = Window.Handle;
-				TouchPanel.WindowHandle = Window.Handle;
+				InitializeClientFeatures();
 			}
 
 			FrameworkDispatcher.Update();
@@ -761,6 +756,17 @@ namespace Microsoft.Xna.Framework
 		#endregion
 
 		#region Private Methods
+
+		// Moved from the constructor to avoid triggering FNA3D in headless mode.
+		private void InitializeClientFeatures()
+		{
+			textInputControlDown = new bool[FNAPlatform.TextInputCharacters.Length];
+			textInputControlRepeat = new int[FNAPlatform.TextInputCharacters.Length];
+
+			Window = FNAPlatform.CreateWindow();
+			Mouse.WindowHandle = Window.Handle;
+			TouchPanel.WindowHandle = Window.Handle;
+		}
 
 		private void DoInitialize()
 		{
