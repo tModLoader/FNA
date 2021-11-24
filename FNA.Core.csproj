@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFrameworks>netstandard2.0;net5.0</TargetFrameworks>
-		<Platforms>x64</Platforms>
+		<TargetFrameworks>net6.0</TargetFrameworks>
+		<Platforms>AnyCPU</Platforms>
 	</PropertyGroup>
 	<PropertyGroup>
 		<EnableDefaultItems>false</EnableDefaultItems>
@@ -178,6 +178,7 @@
 		<Compile Include="src\Graphics\Effect\StockEffects\EnvironmentMapEffect.cs" />
 		<Compile Include="src\Graphics\Effect\StockEffects\SkinnedEffect.cs" />
 		<Compile Include="src\Graphics\Effect\StockEffects\SpriteEffect.cs" />
+		<Compile Include="src\Graphics\FNA3D_SafeAccess.cs" />
 		<Compile Include="src\Graphics\FNA3D.cs" />
 		<Compile Include="src\Graphics\GraphicsAdapter.cs" />
 		<Compile Include="src\Graphics\GraphicsDevice.cs" />
@@ -341,7 +342,10 @@
 		<Compile Include="lib\Theorafile\csharp\Theorafile.cs" />
 	</ItemGroup>
 	<ItemGroup>
-		<None Include="app.config" />
+		<None Include="app.config">
+			<Link>$(TargetFileName).config</Link>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 	</ItemGroup>
 	<ItemGroup>
 		<EmbeddedResource Include="src\Graphics\Effect\StockEffects\FXB\AlphaTestEffect.fxb">
