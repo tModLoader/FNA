@@ -75,6 +75,9 @@ namespace Microsoft.Xna.Framework.Graphics
 					return 8;
 				case SurfaceFormat.Dxt3:
 				case SurfaceFormat.Dxt5:
+				case SurfaceFormat.Dxt5SrgbEXT:
+				case SurfaceFormat.Bc7EXT:
+				case SurfaceFormat.Bc7SrgbEXT:
 					return 16;
 				case SurfaceFormat.Alpha8:
 					return 1;
@@ -91,6 +94,7 @@ namespace Microsoft.Xna.Framework.Graphics
 				case SurfaceFormat.NormalizedByte4:
 				case SurfaceFormat.Rgba1010102:
 				case SurfaceFormat.ColorBgraEXT:
+				case SurfaceFormat.ColorSrgbEXT:
 					return 4;
 				case SurfaceFormat.HalfVector4:
 				case SurfaceFormat.Rgba64:
@@ -152,15 +156,39 @@ namespace Microsoft.Xna.Framework.Graphics
 
 		#region Static DDS Parser
 
+		internal static int CalculateDDSLevelSize(
+			int width,
+			int height,
+			SurfaceFormat format
+		) {
+			if (format == SurfaceFormat.ColorBgraEXT)
+			{
+				return (((width * 32) + 7) / 8) * height;
+			}
+			else
+			{
+				int blockSize = 16;
+				if (format == SurfaceFormat.Dxt1)
+				{
+					blockSize = 8;
+				}
+				width = Math.Max(width, 1);
+				height = Math.Max(height, 1);
+				return (
+					((width + 3) / 4) *
+					((height + 3) / 4) *
+					blockSize
+				);
+			}
+		}
+
 		// DDS loading extension, based on MojoDDS
 		internal static void ParseDDS(
 			BinaryReader reader,
 			out SurfaceFormat format,
 			out int width,
 			out int height,
-			out int levels,
-			out int levelSize,
-			out int blockSize
+			out int levels
 		) {
 			// A whole bunch of magic numbers, yay DDS!
 			const uint DDS_MAGIC = 0x20534444;
@@ -183,6 +211,7 @@ namespace Microsoft.Xna.Framework.Graphics
 			const uint FOURCC_DXT1 = 0x31545844;
 			const uint FOURCC_DXT3 = 0x33545844;
 			const uint FOURCC_DXT5 = 0x35545844;
+			const uint FOURCC_BPTC = 0x30315844;
 			// const uint FOURCC_DX10 = 0x30315844;
 			const uint pitchAndLinear = (
 				DDSD_PITCH | DDSD_LINEARSIZE
@@ -257,34 +286,27 @@ namespace Microsoft.Xna.Framework.Graphics
 			}
 
 			// Determine texture format
-			blockSize = 0;
 			if ((formatFlags & DDPF_FOURCC) == DDPF_FOURCC)
 			{
-				if (formatFourCC == FOURCC_DXT1)
+				switch (formatFourCC)
 				{
-					format = SurfaceFormat.Dxt1;
-					blockSize = 8;
+					case FOURCC_DXT1:
+						format = SurfaceFormat.Dxt1;
+						break;
+					case FOURCC_DXT3:
+						format = SurfaceFormat.Dxt3;
+						break;
+					case FOURCC_DXT5:
+						format = SurfaceFormat.Dxt5;
+						break;
+					case FOURCC_BPTC:
+						format = SurfaceFormat.Bc7EXT;
+						break;
+					default:
+						throw new NotSupportedException(
+							"Unsupported DDS texture format"
+						);
 				}
-				else if (formatFourCC == FOURCC_DXT3)
-				{
-					format = SurfaceFormat.Dxt3;
-					blockSize = 16;
-				}
-				else if (formatFourCC == FOURCC_DXT5)
-				{
-					format = SurfaceFormat.Dxt5;
-					blockSize = 16;
-				}
-				else
-				{
-					throw new NotSupportedException(
-						"Unsupported DDS texture format"
-					);
-				}
-				levelSize = (
-					((width > 0 ? ((width + 3) / 4) : 1) * blockSize) *
-					(height > 0 ? ((height + 3) / 4) : 1)
-				);
 			}
 			else if ((formatFlags & DDPF_RGB) == DDPF_RGB)
 			{
@@ -300,10 +322,6 @@ namespace Microsoft.Xna.Framework.Graphics
 				}
 
 				format = SurfaceFormat.ColorBgraEXT;
-				levelSize = (int) (
-					(((width * formatRGBBitCount) + 7) / 8) *
-					height
-				);
 			}
 			else
 			{

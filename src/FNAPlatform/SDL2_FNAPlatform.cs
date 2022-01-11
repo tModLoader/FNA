@@ -58,12 +58,12 @@ namespace Microsoft.Xna.Framework
 			{
 				OSVersion = SDL.SDL_GetPlatform();
 			}
-			catch(DllNotFoundException e)
+			catch(DllNotFoundException)
 			{
 				FNALoggerEXT.LogError(
 					"SDL2 was not found! Do you have fnalibs?"
 				);
-				throw e;
+				throw;
 			}
 			catch(BadImageFormatException e)
 			{
@@ -127,6 +127,20 @@ namespace Microsoft.Xna.Framework
 					mappingsDB
 				);
 			}
+
+			/* By default, assume physical layout, since XNA games mostly assume XInput.
+			 * This used to be more flexible until Steam decided to enforce the variable
+			 * that already had their desired value as the default (big surprise).
+			 *
+			 * TL;DR: Suck my ass, Steam
+			 *
+			 * -flibit
+			 */
+			SDL.SDL_SetHintWithPriority(
+				SDL.SDL_HINT_GAMECONTROLLER_USE_BUTTON_LABELS,
+				"0",
+				SDL.SDL_HintPriority.SDL_HINT_OVERRIDE
+			);
 
 			// Built-in SDL2 command line arguments
 			string arg;
@@ -224,20 +238,6 @@ namespace Microsoft.Xna.Framework
 					"1"
 				);
 			}
-
-			/* By default, assume physical layout, since XNA games mostly assume XInput.
-			 * This used to be more flexible until Steam decided to enforce the variable
-			 * that already had their desired value as the default (big surprise).
-			 *
-			 * TL;DR: Suck my ass, Steam
-			 *
-			 * -flibit
-			 */
-			SDL.SDL_SetHintWithPriority(
-				SDL.SDL_HINT_GAMECONTROLLER_USE_BUTTON_LABELS,
-				"0",
-				SDL.SDL_HintPriority.SDL_HINT_OVERRIDE
-			);
 
 			SDL.SDL_SetHint(
 				SDL.SDL_HINT_ORIENTATIONS,
@@ -800,7 +800,7 @@ namespace Microsoft.Xna.Framework
 			activeGames.Remove(game);
 		}
 
-		public static void PollEvents(
+		public static unsafe void PollEvents(
 			Game game,
 			ref GraphicsAdapter currentAdapter,
 			bool[] textInputControlDown,
@@ -808,6 +808,7 @@ namespace Microsoft.Xna.Framework
 			ref bool textInputSuppress
 		) {
 			SDL.SDL_Event evt;
+			char* charsBuffer = stackalloc char[32]; // SDL_TEXTINPUTEVENT_TEXT_SIZE
 			while (SDL.SDL_PollEvent(out evt) == 1)
 			{
 				// Keyboard
@@ -1032,52 +1033,44 @@ namespace Microsoft.Xna.Framework
 				else if (evt.type == SDL.SDL_EventType.SDL_TEXTINPUT && !textInputSuppress)
 				{
 					// Based on the SDL2# LPUtf8StrMarshaler
-					unsafe
+					int bytes = MeasureStringLength(evt.text.text);
+					if (bytes > 0)
 					{
-						int bytes = MeasureStringLength(evt.text.text);
-						if (bytes > 0) 
-						{
-							/* UTF8 will never encode more characters
-							 * than bytes in a string, so bytes is a
-							 * suitable upper estimate of size needed
-							 */
-							char* charsBuffer = stackalloc char[bytes];
-							int chars = Encoding.UTF8.GetChars(
-								evt.text.text,
-								bytes,
-								charsBuffer,
-								bytes
-							);
+						/* UTF8 will never encode more characters
+						 * than bytes in a string, so bytes is a
+						 * suitable upper estimate of size needed
+						 */
+						int chars = Encoding.UTF8.GetChars(
+							evt.text.text,
+							bytes,
+							charsBuffer,
+							bytes
+						);
 
-							for (int i = 0; i < chars; i += 1)
-							{
-								TextInputEXT.OnTextInput(charsBuffer[i]);
-							}
+						for (int i = 0; i < chars; i += 1)
+						{
+							TextInputEXT.OnTextInput(charsBuffer[i]);
 						}
 					}
 				}
 
 				else if (evt.type == SDL.SDL_EventType.SDL_TEXTEDITING) 
 				{
-					unsafe 
+					int bytes = MeasureStringLength(evt.edit.text);
+					if (bytes > 0)
 					{
-						int bytes = MeasureStringLength(evt.edit.text);
-						if (bytes > 0) 
-						{
-							char* charsBuffer = stackalloc char[bytes];
-							int chars = Encoding.UTF8.GetChars(
-								evt.edit.text,
-								bytes,
-								charsBuffer,
-								bytes
-							);
-							string text = new string(charsBuffer, 0, chars);
-							TextInputEXT.OnTextEditing(text, evt.edit.start, evt.edit.length);
-						} 
-						else 
-						{
-							TextInputEXT.OnTextEditing(null, 0, 0);
-						}
+						int chars = Encoding.UTF8.GetChars(
+							evt.edit.text,
+							bytes,
+							charsBuffer,
+							bytes
+						);
+						string text = new string(charsBuffer, 0, chars);
+						TextInputEXT.OnTextEditing(text, evt.edit.start, evt.edit.length);
+					}
+					else
+					{
+						TextInputEXT.OnTextEditing(null, 0, 0);
 					}
 				}
 

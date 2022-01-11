@@ -55,10 +55,10 @@ namespace Microsoft.Xna.Framework
 					arg
 				);
 			}
-			if (args.TryGetValue("disablelateswaptear", out arg) && arg == "1")
+			if (args.TryGetValue("enablelateswaptear", out arg) && arg == "1")
 			{
 				Environment.SetEnvironmentVariable(
-					"FNA3D_DISABLE_LATESWAPTEAR",
+					"FNA3D_ENABLE_LATESWAPTEAR",
 					"1"
 				);
 			}
@@ -136,6 +136,11 @@ namespace Microsoft.Xna.Framework
 
 			AppDomain.CurrentDomain.ProcessExit += SDL2_FNAPlatform.ProgramExit;
 			TitleLocation = SDL2_FNAPlatform.ProgramInit(args);
+
+			/* Do this AFTER ProgramInit so the platform library
+			 * has a chance to load first!
+			 */
+			FNALoggerEXT.HookFNA3D();
 		}
 
 		#endregion
