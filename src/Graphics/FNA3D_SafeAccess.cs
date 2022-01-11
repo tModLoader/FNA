@@ -178,5 +178,7 @@ namespace Microsoft.Xna.Framework.Graphics
 		public static void FNA3D_GetMaxTextureSlots(IntPtr device, out int textures, out int vertexTextures) { CheckThread(); FNA3D_Impl.FNA3D_GetMaxTextureSlots(device, out textures, out vertexTextures); }
 
 		public static int FNA3D_GetMaxMultiSampleCount(IntPtr device, SurfaceFormat format, int preferredMultiSampleCount) { CheckThread(); return FNA3D_Impl.FNA3D_GetMaxMultiSampleCount(device, format, preferredMultiSampleCount); }
+
+		public static byte FNA3D_SupportsSRGBRenderTargets(IntPtr device) { CheckThread(); return FNA3D_Impl.FNA3D_SupportsSRGBRenderTargets(device); }
 	}
 }
