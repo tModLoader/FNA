@@ -83,10 +83,18 @@ namespace Microsoft.Xna.Framework
 					"1"
 				);
 			}
+			if (args.TryGetValue("nukesteaminput", out arg) && arg == "1")
+			{
+				Environment.SetEnvironmentVariable(
+					"FNA_NUKE_STEAM_INPUT",
+					"1"
+				);
+			}
 
 			CreateWindow =			SDL2_FNAPlatform.CreateWindow;
 			DisposeWindow =			SDL2_FNAPlatform.DisposeWindow;
 			ApplyWindowChanges =		SDL2_FNAPlatform.ApplyWindowChanges;
+			ScaleForWindow =		SDL2_FNAPlatform.ScaleForWindow;
 			GetWindowBounds =		SDL2_FNAPlatform.GetWindowBounds;
 			GetWindowResizable =		SDL2_FNAPlatform.GetWindowResizable;
 			SetWindowResizable =		SDL2_FNAPlatform.SetWindowResizable;
@@ -192,6 +200,9 @@ namespace Microsoft.Xna.Framework
 			ref string resultDeviceName
 		);
 		public static readonly ApplyWindowChangesFunc ApplyWindowChanges;
+
+		public delegate void ScaleForWindowFunc(IntPtr window, bool invert, ref int w, ref int h);
+		public static readonly ScaleForWindowFunc ScaleForWindow;
 
 		public delegate Rectangle GetWindowBoundsFunc(IntPtr window);
 		public static readonly GetWindowBoundsFunc GetWindowBounds;
