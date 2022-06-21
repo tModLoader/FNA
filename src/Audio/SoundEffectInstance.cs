@@ -404,6 +404,9 @@ namespace Microsoft.Xna.Framework.Audio
 				return;
 			}
 
+			if (isDynamic)
+				ThreadCheck.CheckThread();
+
 			if (immediate)
 			{
 				FAudio.FAudioSourceVoice_Stop(handle, 0, 0);

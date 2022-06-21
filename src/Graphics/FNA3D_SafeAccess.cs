@@ -8,25 +8,12 @@
 #endregion
 
 using System;
-using System.Threading;
+using static Microsoft.Xna.Framework.ThreadCheck;
 
 namespace Microsoft.Xna.Framework.Graphics
 {
 	public static partial class FNA3D
 	{
-		private static int mainThreadId = -1;
-
-		public static bool IsMainThread => Thread.CurrentThread.ManagedThreadId == mainThreadId;
-
-		public static void CheckThread()
-		{
-			if (mainThreadId < 0)
-				mainThreadId = Thread.CurrentThread.ManagedThreadId;
-			else if(!IsMainThread)
-				throw new ThreadStateException("FNA3D graphics functions must be called on the main thread");
-		}
-
-
 		public static uint FNA3D_PrepareWindowAttributes() { CheckThread(); return FNA3D_Impl.FNA3D_PrepareWindowAttributes(); }
 
 		public static void FNA3D_GetDrawableSize(IntPtr window, out int w, out int h) { CheckThread(); FNA3D_Impl.FNA3D_GetDrawableSize(window, out w, out h); }
