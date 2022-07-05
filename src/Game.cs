@@ -212,6 +212,7 @@ namespace Microsoft.Xna.Framework
 		private long previousTicks = 0;
 		private int updateFrameLag;
 		private bool forceElapsedTimeToZero = false;
+
 		// must be a power of 2 so we can do a bitmask optimization when checking worst case
 		private const int PREVIOUS_SLEEP_TIME_COUNT = 128;
 		private const int SLEEP_TIME_MASK = PREVIOUS_SLEEP_TIME_COUNT - 1;
@@ -260,6 +261,8 @@ namespace Microsoft.Xna.Framework
 				previousSleepTimes[i] = TimeSpan.FromMilliseconds(1);
 			}
 
+			textInputControlDown = new bool[FNAPlatform.TextInputCharacters.Length];
+
 			hasInitialized = false;
 			suppressDraw = false;
 			isDisposed = false;
@@ -268,7 +271,9 @@ namespace Microsoft.Xna.Framework
 
 			if (!headlessMode)
 			{
-				InitializeClientFeatures();
+				Window = FNAPlatform.CreateWindow();
+				Mouse.WindowHandle = Window.Handle;
+				TouchPanel.WindowHandle = Window.Handle;
 			}
 
 			FrameworkDispatcher.Update();
@@ -753,16 +758,6 @@ namespace Microsoft.Xna.Framework
 		#endregion
 
 		#region Private Methods
-
-		// Moved from the constructor to avoid triggering FNA3D in headless mode.
-		private void InitializeClientFeatures()
-		{
-			textInputControlDown = new bool[FNAPlatform.TextInputCharacters.Length];
-
-			Window = FNAPlatform.CreateWindow();
-			Mouse.WindowHandle = Window.Handle;
-			TouchPanel.WindowHandle = Window.Handle;
-		}
 
 		private void DoInitialize()
 		{
