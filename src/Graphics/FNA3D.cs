@@ -156,6 +156,9 @@ namespace Microsoft.Xna.Framework.Graphics
 			FNA3D_LogFunc error
 		);
 
+		[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+		public static extern uint FNA3D_LinkedVersion();
+
 		#endregion
 	}
 
