@@ -20,7 +20,7 @@ namespace Microsoft.Xna.Framework.Graphics
 	{
 		#region Private Constants
 
-		public const string nativeLibName = "FNA3D";
+		internal const string nativeLibName = "FNA3D";
 
 		#endregion
 
@@ -165,7 +165,7 @@ namespace Microsoft.Xna.Framework.Graphics
 
 		[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
 		public static extern uint FNA3D_PrepareWindowAttributes();
-
+		
 		[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
 		public static extern void FNA3D_GetDrawableSize(
 			IntPtr window,
@@ -825,7 +825,8 @@ namespace Microsoft.Xna.Framework.Graphics
 		#endregion
 	}
 
-	public static partial class FNA3D {
+	public static partial class FNA3D
+	{
 		#region Debugging
 
 		[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
