@@ -1267,7 +1267,7 @@ namespace Microsoft.Xna.Framework.Graphics
 
 			int arrayOffset = 0;
 		nextbatch:
-			int batchSize = numSprites;
+			int batchSize = Math.Min(numSprites, MAX_SPRITES);
 			int baseOff = UpdateVertexBuffer(arrayOffset, batchSize);
 			int offset = 0;
 
@@ -1284,10 +1284,10 @@ namespace Microsoft.Xna.Framework.Graphics
 			}
 			DrawPrimitives(curTexture, baseOff + offset, batchSize - offset);
 
-			if (numSprites > batchSize)
+			if (numSprites > MAX_SPRITES)
 			{
-				numSprites -= batchSize;
-				arrayOffset += batchSize;
+				numSprites -= MAX_SPRITES;
+				arrayOffset += MAX_SPRITES;
 				goto nextbatch;
 			}
 			numSprites = 0;
