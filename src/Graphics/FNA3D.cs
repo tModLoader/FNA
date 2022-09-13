@@ -16,6 +16,7 @@ using static Microsoft.Xna.Framework.Graphics.FNA3D;
 
 namespace Microsoft.Xna.Framework.Graphics
 {
+	[System.Security.SuppressUnmanagedCodeSecurity]
 	public static partial class FNA3D
 	{
 		#region Private Constants
