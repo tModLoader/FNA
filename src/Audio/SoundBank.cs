@@ -1,6 +1,6 @@
 #region License
 /* FNA - XNA4 Reimplementation for Desktop Platforms
- * Copyright 2009-2022 Ethan Lee and the MonoGame Team
+ * Copyright 2009-2023 Ethan Lee and the MonoGame Team
  *
  * Released under the Microsoft Public License.
  * See LICENSE for details.
@@ -89,7 +89,7 @@ namespace Microsoft.Xna.Framework.Audio
 			dspSettings = new FAudio.F3DAUDIO_DSP_SETTINGS();
 			dspSettings.SrcChannelCount = 1;
 			dspSettings.DstChannelCount = engine.channels;
-			dspSettings.pMatrixCoefficients = Marshal.AllocHGlobal(
+			dspSettings.pMatrixCoefficients = FNAPlatform.Malloc(
 				4 *
 				(int) dspSettings.SrcChannelCount *
 				(int) dspSettings.DstChannelCount
@@ -274,7 +274,7 @@ namespace Microsoft.Xna.Framework.Audio
 			selfReference = null;
 			if (dspSettings.pMatrixCoefficients != IntPtr.Zero)
 			{
-				Marshal.FreeHGlobal(dspSettings.pMatrixCoefficients);
+				FNAPlatform.Free(dspSettings.pMatrixCoefficients);
 				dspSettings.pMatrixCoefficients = IntPtr.Zero;
 			}
 		}

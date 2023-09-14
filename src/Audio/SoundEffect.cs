@@ -1,6 +1,6 @@
 #region License
 /* FNA - XNA4 Reimplementation for Desktop Platforms
- * Copyright 2009-2022 Ethan Lee and the MonoGame Team
+ * Copyright 2009-2023 Ethan Lee and the MonoGame Team
  *
  * Released under the Microsoft Public License.
  * See LICENSE for details.
@@ -210,20 +210,20 @@ namespace Microsoft.Xna.Framework.Audio
 			/* Buffer format */
 			if (extraData == null)
 			{
-				formatPtr = Marshal.AllocHGlobal(
-					Marshal.SizeOf(typeof(FAudio.FAudioWaveFormatEx))
+				formatPtr = FNAPlatform.Malloc(
+					MarshalHelper.SizeOf<FAudio.FAudioWaveFormatEx>()
 				);
 			}
 			else
 			{
-				formatPtr = Marshal.AllocHGlobal(
-					Marshal.SizeOf(typeof(FAudio.FAudioWaveFormatEx)) +
+				formatPtr = FNAPlatform.Malloc(
+					MarshalHelper.SizeOf<FAudio.FAudioWaveFormatEx>() +
 					extraData.Length
 				);
 				Marshal.Copy(
 					extraData,
 					0,
-					formatPtr + Marshal.SizeOf(typeof(FAudio.FAudioWaveFormatEx)),
+					formatPtr + MarshalHelper.SizeOf<FAudio.FAudioWaveFormatEx>(),
 					extraData.Length
 				);
 			}
@@ -244,7 +244,7 @@ namespace Microsoft.Xna.Framework.Audio
 
 			/* Buffer data */
 			handle.AudioBytes = (uint) count;
-			handle.pAudioData = Marshal.AllocHGlobal(count);
+			handle.pAudioData = FNAPlatform.Malloc(count);
 			Marshal.Copy(
 				buffer,
 				offset,
@@ -320,8 +320,8 @@ namespace Microsoft.Xna.Framework.Audio
 					}
 				}
 				Instances.Clear();
-				Marshal.FreeHGlobal(formatPtr);
-				Marshal.FreeHGlobal(handle.pAudioData);
+				FNAPlatform.Free(formatPtr);
+				FNAPlatform.Free(handle.pAudioData);
 				IsDisposed = true;
 			}
 		}
@@ -609,7 +609,7 @@ namespace Microsoft.Xna.Framework.Audio
 				{
 					FAudio.FAudioVoice_DestroyVoice(ReverbVoice);
 					ReverbVoice = IntPtr.Zero;
-					Marshal.FreeHGlobal(reverbSends.pSends);
+					FNAPlatform.Free(reverbSends.pSends);
 				}
 				if (MasterVoice != IntPtr.Zero) 
 				{
@@ -631,13 +631,13 @@ namespace Microsoft.Xna.Framework.Audio
 					FAudio.FAudioCreateReverb(out reverb, 0);
 
 					IntPtr chainPtr;
-					chainPtr = Marshal.AllocHGlobal(
-						Marshal.SizeOf(typeof(FAudio.FAudioEffectChain))
+					chainPtr = FNAPlatform.Malloc(
+						MarshalHelper.SizeOf<FAudio.FAudioEffectChain>()
 					);
 					FAudio.FAudioEffectChain* reverbChain = (FAudio.FAudioEffectChain*) chainPtr;
 					reverbChain->EffectCount = 1;
-					reverbChain->pEffectDescriptors = Marshal.AllocHGlobal(
-						Marshal.SizeOf(typeof(FAudio.FAudioEffectDescriptor))
+					reverbChain->pEffectDescriptors = FNAPlatform.Malloc(
+						MarshalHelper.SizeOf<FAudio.FAudioEffectDescriptor>()
 					);
 
 					FAudio.FAudioEffectDescriptor* reverbDesc =
@@ -660,12 +660,12 @@ namespace Microsoft.Xna.Framework.Audio
 					);
 					FAudio.FAPOBase_Release(reverb);
 
-					Marshal.FreeHGlobal(reverbChain->pEffectDescriptors);
-					Marshal.FreeHGlobal(chainPtr);
+					FNAPlatform.Free(reverbChain->pEffectDescriptors);
+					FNAPlatform.Free(chainPtr);
 
 					// Defaults based on FAUDIOFX_I3DL2_PRESET_GENERIC
-					IntPtr rvbParamsPtr = Marshal.AllocHGlobal(
-						Marshal.SizeOf(typeof(FAudio.FAudioFXReverbParameters))
+					IntPtr rvbParamsPtr = FNAPlatform.Malloc(
+						MarshalHelper.SizeOf<FAudio.FAudioFXReverbParameters>()
 					);
 					FAudio.FAudioFXReverbParameters* rvbParams = (FAudio.FAudioFXReverbParameters*) rvbParamsPtr;
 					rvbParams->WetDryMix = 100.0f;
@@ -694,15 +694,15 @@ namespace Microsoft.Xna.Framework.Audio
 						ReverbVoice,
 						0,
 						rvbParamsPtr,
-						(uint) Marshal.SizeOf(typeof(FAudio.FAudioFXReverbParameters)),
+						(uint)MarshalHelper.SizeOf<FAudio.FAudioFXReverbParameters>(),
 						0
 					);
-					Marshal.FreeHGlobal(rvbParamsPtr);
+					FNAPlatform.Free(rvbParamsPtr);
 
 					reverbSends = new FAudio.FAudioVoiceSends();
 					reverbSends.SendCount = 2;
-					reverbSends.pSends = Marshal.AllocHGlobal(
-						2 * Marshal.SizeOf(typeof(FAudio.FAudioSendDescriptor))
+					reverbSends.pSends = FNAPlatform.Malloc(
+						2 * MarshalHelper.SizeOf<FAudio.FAudioSendDescriptor>()
 					);
 					FAudio.FAudioSendDescriptor* sendDesc = (FAudio.FAudioSendDescriptor*) reverbSends.pSends;
 					sendDesc[0].Flags = 0;
