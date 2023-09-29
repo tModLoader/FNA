@@ -211,11 +211,14 @@ namespace Microsoft.Xna.Framework
 			 */
 			if (args.TryGetValue("audiodriver", out arg))
 			{
+				// tML has its own -audiodriver argument with some more safety
+				/*
 				SDL.SDL_SetHintWithPriority(
 					"SDL_AUDIODRIVER",
 					arg,
 					SDL.SDL_HintPriority.SDL_HINT_OVERRIDE
 				);
+				*/
 			}
 
 			// This _should_ be the first real SDL call we make...
