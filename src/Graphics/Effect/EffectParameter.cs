@@ -90,6 +90,7 @@ namespace Microsoft.Xna.Framework.Graphics
 		#region Internal Variables
 
 		internal Texture texture;
+		internal string cachedString = string.Empty;
 
 		internal IntPtr values;
 		internal uint valuesSizeBytes;
@@ -99,6 +100,12 @@ namespace Microsoft.Xna.Framework.Graphics
 		internal int elementCount;
 		internal EffectParameterCollection elements;
 		internal EffectParameterCollection members;
+		#endregion
+
+		#region Private Variables
+
+		// Ugly as all heck, but I had to do it for structures. - MrSoup678
+		private Effect outer;
 
 		#endregion
 
@@ -115,7 +122,8 @@ namespace Microsoft.Xna.Framework.Graphics
 			IntPtr mojoType,
 			EffectAnnotationCollection annotations,
 			IntPtr data,
-			uint dataSizeBytes
+			uint dataSizeBytes,
+			Effect effect
 		) {
 			if (data == IntPtr.Zero)
 			{
@@ -133,6 +141,7 @@ namespace Microsoft.Xna.Framework.Graphics
 			Annotations = annotations;
 			values = data;
 			valuesSizeBytes = dataSizeBytes;
+			outer = effect;
 		}
 
 		internal EffectParameter(
@@ -146,7 +155,8 @@ namespace Microsoft.Xna.Framework.Graphics
 			EffectParameterCollection structureMembers,
 			EffectAnnotationCollection annotations,
 			IntPtr data,
-			uint dataSizeBytes
+			uint dataSizeBytes,
+			Effect effect
 		) {
 			if (data == IntPtr.Zero)
 			{
@@ -164,6 +174,7 @@ namespace Microsoft.Xna.Framework.Graphics
 			Annotations = annotations;
 			values = data;
 			valuesSizeBytes = dataSizeBytes;
+			outer = effect;
 		}
 
 		#endregion
@@ -172,7 +183,7 @@ namespace Microsoft.Xna.Framework.Graphics
 
 		internal void BuildMemberList()
 		{
-			members = Effect.INTERNAL_readEffectParameterStructureMembers(this, mojoType);
+			members = Effect.INTERNAL_readEffectParameterStructureMembers(this, mojoType, outer);
 		}
 
 		internal void BuildElementList()
@@ -211,7 +222,8 @@ namespace Microsoft.Xna.Framework.Graphics
 								IntPtr.Zero, // FIXME: Nested structs! -flibit
 								structureMembers[j].Annotations,
 								new IntPtr(values.ToInt64() + curOffset),
-								(uint) memSize * 4
+								(uint) memSize * 4,
+								outer
 							));
 							curOffset += memSize * 4;
 						}
@@ -232,7 +244,8 @@ namespace Microsoft.Xna.Framework.Graphics
 							values.ToInt64() + (i * RowCount * 16)
 						),
 						// FIXME: Not obvious to me how to compute this -kg
-						0
+						0,
+						outer
 					));
 				}
 				this.elements = new EffectParameterCollection(elements);
@@ -457,11 +470,7 @@ namespace Microsoft.Xna.Framework.Graphics
 
 		public string GetValueString()
 		{
-			/* FIXME: This requires digging into the effect->objects list.
-			 * We've got the data, we just need to hook it up to FNA.
-			 * -flibit
-			 */
-			throw new NotImplementedException("effect->objects[?]");
+			return cachedString;
 		}
 
 		public Texture2D GetValueTexture2D()
