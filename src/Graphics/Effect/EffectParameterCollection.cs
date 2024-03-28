@@ -8,6 +8,7 @@
 #endregion
 
 #region Using Statements
+using System;
 using System.Collections;
 using System.Collections.Generic;
 #endregion
@@ -45,7 +46,7 @@ namespace Microsoft.Xna.Framework.Graphics
 						return elem;
 					}
 				}
-				return null; // FIXME: ArrayIndexOutOfBounds? -flibit
+				throw new IndexOutOfRangeException($"Parameter with name '{name}' does not exist in effect.");
 			}
 		}
 
