@@ -46,7 +46,7 @@ namespace Microsoft.Xna.Framework.Graphics
 						return elem;
 					}
 				}
-				throw new IndexOutOfRangeException($"Parameter with name '{name}' does not exist in effect.");
+				throw new KeyNotFoundException($"Parameter with name '{name}' does not exist in effect.");
 			}
 		}
 
