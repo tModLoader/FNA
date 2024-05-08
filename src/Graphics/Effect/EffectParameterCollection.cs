@@ -8,7 +8,6 @@
 #endregion
 
 #region Using Statements
-using System;
 using System.Collections;
 using System.Collections.Generic;
 #endregion
@@ -46,7 +45,7 @@ namespace Microsoft.Xna.Framework.Graphics
 						return elem;
 					}
 				}
-				throw new KeyNotFoundException($"Parameter with name '{name}' does not exist in effect.");
+				return null; // FIXME: ArrayIndexOutOfBounds? -flibit
 			}
 		}
 
