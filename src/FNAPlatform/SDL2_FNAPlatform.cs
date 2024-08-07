@@ -221,6 +221,7 @@ namespace Microsoft.Xna.Framework
 				*/
 			}
 
+			/*
 			// This _should_ be the first real SDL call we make...
 			if (SDL.SDL_Init(
 				SDL.SDL_INIT_VIDEO |
@@ -229,6 +230,20 @@ namespace Microsoft.Xna.Framework
 			{
 				throw new Exception("SDL_Init failed: " + SDL.SDL_GetError());
 			}
+			*/
+			// Separate and add logging to determine if silent crash is caused by controllers
+			FNALoggerEXT.LogInfo("SDL.SDL_Init(SDL.SDL_INIT_VIDEO)...");
+			if (SDL.SDL_Init(SDL.SDL_INIT_VIDEO) != 0)
+			{
+				throw new Exception("SDL.SDL_Init(SDL.SDL_INIT_VIDEO) failed: " + SDL.SDL_GetError());
+			}
+			FNALoggerEXT.LogInfo("Success");
+			FNALoggerEXT.LogInfo("SDL.SDL_InitSubSystem(SDL.SDL_INIT_GAMECONTROLLER)...");
+			if (SDL.SDL_InitSubSystem(SDL.SDL_INIT_GAMECONTROLLER) != 0)
+			{
+				throw new Exception("SDL.SDL_InitSubSystem(SDL.SDL_INIT_GAMECONTROLLER) failed: " + SDL.SDL_GetError());
+			}
+			FNALoggerEXT.LogInfo("Success");
 
 			string videoDriver = SDL.SDL_GetCurrentVideoDriver();
 
