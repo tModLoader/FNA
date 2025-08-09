@@ -92,7 +92,9 @@ namespace Microsoft.Xna.Framework.Audio
 			}
 			set
 			{
-				INTERNAL_pitch = MathHelper.Clamp(value, -1.0f, 1.0f);
+				// TML: tModLoader/tModLoader#4618-tied pitch uncap.
+				INTERNAL_pitch = value; //MathHelper.Clamp(value, -1.0f, 1.0f);
+
 				if (handle != IntPtr.Zero)
 				{
 					UpdatePitch();
