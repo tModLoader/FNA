@@ -1,6 +1,6 @@
 #region License
 /* FNA - XNA4 Reimplementation for Desktop Platforms
- * Copyright 2009-2023 Ethan Lee and the MonoGame Team
+ * Copyright 2009-2024 Ethan Lee and the MonoGame Team
  *
  * Released under the Microsoft Public License.
  * See LICENSE for details.
@@ -10,6 +10,7 @@
 #region Using Statements
 using System;
 using System.IO;
+using System.Threading;
 #endregion
 
 namespace Microsoft.Xna.Framework.Graphics
@@ -30,6 +31,33 @@ namespace Microsoft.Xna.Framework.Graphics
 			protected set;
 		}
 
+		public override string Name
+		{
+			get
+			{
+				return base.Name;
+			}
+			set
+			{
+				// Avoid calling SetTextureName when the value hasn't changed.
+				if (value == base.Name)
+				{
+					return;
+				}
+
+				base.Name = value;
+
+				// Never pass a null string pointer through to SetTextureName.
+				// Since base.Name will be null by default, this will only happen if
+				//  you first set a name for the texture, then try to null it out.
+				if (value == null)
+				{
+					value = string.Empty;
+				}
+				FNA3D.FNA3D_SetTextureName(GraphicsDevice.GLDevice, texture, value);
+			}
+		}
+
 		#endregion
 
 		#region Internal FNA3D Variables
@@ -46,10 +74,15 @@ namespace Microsoft.Xna.Framework.Graphics
 			{
 				GraphicsDevice.Textures.RemoveDisposedTexture(this);
 				GraphicsDevice.VertexTextures.RemoveDisposedTexture(this);
-				FNA3D.FNA3D_AddDisposeTexture(
-					GraphicsDevice.GLDevice,
-					texture
-				);
+
+				IntPtr toDispose = Interlocked.Exchange(ref texture, IntPtr.Zero);
+				if (toDispose != IntPtr.Zero)
+				{
+					FNA3D.FNA3D_AddDisposeTexture(
+						GraphicsDevice.GLDevice,
+						toDispose
+					);
+				}
 			}
 			base.Dispose(disposing);
 		}
@@ -67,7 +100,7 @@ namespace Microsoft.Xna.Framework.Graphics
 
 		#region Static SurfaceFormat Size Methods
 
-		protected static int GetBlockSizeSquared(SurfaceFormat format)
+		public static int GetBlockSizeSquaredEXT(SurfaceFormat format)
 		{
 			switch (format)
 			{
@@ -103,7 +136,7 @@ namespace Microsoft.Xna.Framework.Graphics
 			}
 		}
 
-		internal static int GetFormatSize(SurfaceFormat format)
+		public static int GetFormatSizeEXT(SurfaceFormat format)
 		{
 			switch (format)
 			{
@@ -151,14 +184,14 @@ namespace Microsoft.Xna.Framework.Graphics
 			 * https://www.khronos.org/registry/OpenGL/specs/gl/glspec21.pdf
 			 * OpenGL 2.1 Specification, section 3.6.1, table 3.1 specifies that the pixelstorei alignment cannot exceed 8
 			 */
-			return Math.Min(8, GetFormatSize(format));
+			return Math.Min(8, GetFormatSizeEXT(format));
 		}
 
 		internal static void ValidateGetDataFormat(
 			SurfaceFormat format,
 			int elementSizeInBytes
 		) {
-			if (GetFormatSize(format) % elementSizeInBytes != 0)
+			if (GetFormatSizeEXT(format) % elementSizeInBytes != 0)
 			{
 				throw new ArgumentException(
 					"The type you are using for T in this" +
@@ -197,7 +230,7 @@ namespace Microsoft.Xna.Framework.Graphics
 			int height,
 			SurfaceFormat format
 		) {
-			if (format == SurfaceFormat.ColorBgraEXT)
+			if (format == SurfaceFormat.Color || format == SurfaceFormat.ColorBgraEXT)
 			{
 				return (((width * 32) + 7) / 8) * height;
 			}
@@ -445,18 +478,24 @@ namespace Microsoft.Xna.Framework.Graphics
 			}
 			else if ((formatFlags & DDPF_RGB) == DDPF_RGB)
 			{
-				if (	formatRGBBitCount != 32 ||
-					formatRBitMask != 0x00FF0000 ||
-					formatGBitMask != 0x0000FF00 ||
-					formatBBitMask != 0x000000FF ||
-					formatABitMask != 0xFF000000	)
-				{
-					throw new NotSupportedException(
-						"Unsupported DDS texture format"
-					);
-				}
+				if (formatRGBBitCount != 32)
+					throw new NotSupportedException("Unsupported DDS texture format: Alpha channel required");
 
-				format = SurfaceFormat.ColorBgraEXT;
+				bool isBgra = (formatRBitMask == 0x00FF0000 &&
+					formatGBitMask == 0x0000FF00 &&
+					formatBBitMask == 0x000000FF &&
+					formatABitMask == 0xFF000000);
+				bool isRgba = (formatRBitMask == 0x000000FF &&
+					formatGBitMask == 0x0000FF00 &&
+					formatBBitMask == 0x00FF0000 &&
+					formatABitMask == 0xFF000000);
+
+				if (isBgra)
+					format = SurfaceFormat.ColorBgraEXT;
+				else if (isRgba)
+					format = SurfaceFormat.Color;
+				else
+					throw new NotSupportedException("Unsupported DDS texture format: Only RGBA and BGRA are supported");
 			}
 			else
 			{

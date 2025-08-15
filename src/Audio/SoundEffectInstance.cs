@@ -1,6 +1,6 @@
 #region License
 /* FNA - XNA4 Reimplementation for Desktop Platforms
- * Copyright 2009-2023 Ethan Lee and the MonoGame Team
+ * Copyright 2009-2024 Ethan Lee and the MonoGame Team
  *
  * Released under the Microsoft Public License.
  * See LICENSE for details.
@@ -167,6 +167,14 @@ namespace Microsoft.Xna.Framework.Audio
 
 		#endregion
 
+		#region Private Static Variables
+
+		private static readonly float maxFreqRatio = Environment.GetEnvironmentVariable(
+			"FNA_SOUNDEFFECT_UNCAPPED_PITCH"
+		) == "1" ? FAudio.FAUDIO_MAX_FREQ_RATIO : FAudio.FAUDIO_DEFAULT_FREQ_RATIO;
+
+		#endregion
+
 		#region Internal Constructor
 
 		internal SoundEffectInstance(SoundEffect parent = null)
@@ -197,7 +205,7 @@ namespace Microsoft.Xna.Framework.Audio
 
 		~SoundEffectInstance()
 		{
-			if (!IsDisposed && State == SoundState.Playing)
+			if (!SoundEffect.FAudioContext.ProgramExiting && !IsDisposed && State == SoundState.Playing)
 			{
 				// STOP LEAKING YOUR INSTANCES, ARGH
 				GC.ReRegisterForFinalize(this);
@@ -299,7 +307,7 @@ namespace Microsoft.Xna.Framework.Audio
 					out handle,
 					ref (this as DynamicSoundEffectInstance).format,
 					FAudio.FAUDIO_VOICE_USEFILTER,
-					FAudio.FAUDIO_MAX_FREQ_RATIO,
+					maxFreqRatio,
 					IntPtr.Zero,
 					IntPtr.Zero,
 					IntPtr.Zero
@@ -312,7 +320,7 @@ namespace Microsoft.Xna.Framework.Audio
 					out handle,
 					parentEffect.formatPtr,
 					FAudio.FAUDIO_VOICE_USEFILTER,
-					FAudio.FAUDIO_MAX_FREQ_RATIO,
+					maxFreqRatio,
 					IntPtr.Zero,
 					IntPtr.Zero,
 					IntPtr.Zero
