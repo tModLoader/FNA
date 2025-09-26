@@ -90,7 +90,7 @@ namespace Microsoft.Xna.Framework.Graphics
 				
 		public static IntPtr FNA3D_CreateTextureCube(IntPtr device, SurfaceFormat format, int size, int levelCount, byte isRenderTarget) { CheckThread(); return FNA3D_Impl.FNA3D_CreateTextureCube(device, format, size, levelCount, isRenderTarget); }
 
-		public static void FNA3D_AddDisposeTexture(IntPtr device, IntPtr texture) { CheckThread(); FNA3D_Impl.FNA3D_AddDisposeTexture(device, texture); }
+		public static void FNA3D_AddDisposeTexture(IntPtr device, IntPtr texture) { FNA3D_Impl.FNA3D_AddDisposeTexture(device, texture); }
 
 		public static void FNA3D_SetTextureData2D(IntPtr device, IntPtr texture, int x, int y, int w, int h, int level, IntPtr data, int dataLength) { CheckThread(); FNA3D_Impl.FNA3D_SetTextureData2D(device, texture, x, y, w, h, level, data, dataLength); }
 				
@@ -110,11 +110,11 @@ namespace Microsoft.Xna.Framework.Graphics
 
 		public static IntPtr FNA3D_GenDepthStencilRenderbuffer(IntPtr device, int width, int height, DepthFormat format, int multiSampleCount) { CheckThread(); return FNA3D_Impl.FNA3D_GenDepthStencilRenderbuffer(device, width, height, format, multiSampleCount); }
 
-		public static void FNA3D_AddDisposeRenderbuffer(IntPtr device, IntPtr renderbuffer) { CheckThread(); FNA3D_Impl.FNA3D_AddDisposeRenderbuffer(device, renderbuffer); }
+		public static void FNA3D_AddDisposeRenderbuffer(IntPtr device, IntPtr renderbuffer) { FNA3D_Impl.FNA3D_AddDisposeRenderbuffer(device, renderbuffer); }
 
 		public static IntPtr FNA3D_GenVertexBuffer(IntPtr device, byte dynamic, BufferUsage usage, int sizeInBytes) { CheckThread(); return FNA3D_Impl.FNA3D_GenVertexBuffer(device, dynamic, usage, sizeInBytes); }
 
-		public static void FNA3D_AddDisposeVertexBuffer(IntPtr device, IntPtr buffer) { CheckThread(); FNA3D_Impl.FNA3D_AddDisposeVertexBuffer(device, buffer); }
+		public static void FNA3D_AddDisposeVertexBuffer(IntPtr device, IntPtr buffer) { FNA3D_Impl.FNA3D_AddDisposeVertexBuffer(device, buffer); }
 
 		public static void FNA3D_SetVertexBufferData(IntPtr device, IntPtr buffer, int offsetInBytes, IntPtr data, int elementCount, int elementSizeInBytes, int vertexStride, SetDataOptions options) { CheckThread(); FNA3D_Impl.FNA3D_SetVertexBufferData(device, buffer, offsetInBytes, data, elementCount, elementSizeInBytes, vertexStride, options); }
 
@@ -122,7 +122,7 @@ namespace Microsoft.Xna.Framework.Graphics
 
 		public static IntPtr FNA3D_GenIndexBuffer(IntPtr device, byte dynamic, BufferUsage usage, int sizeInBytes) { CheckThread(); return FNA3D_Impl.FNA3D_GenIndexBuffer(device, dynamic, usage, sizeInBytes); }
 
-		public static void FNA3D_AddDisposeIndexBuffer(IntPtr device, IntPtr buffer) { CheckThread(); FNA3D_Impl.FNA3D_AddDisposeIndexBuffer(device, buffer); }
+		public static void FNA3D_AddDisposeIndexBuffer(IntPtr device, IntPtr buffer) { FNA3D_Impl.FNA3D_AddDisposeIndexBuffer(device, buffer); }
 
 		public static void FNA3D_SetIndexBufferData(IntPtr device, IntPtr buffer, int offsetInBytes, IntPtr data, int dataLength, SetDataOptions options) { CheckThread(); FNA3D_Impl.FNA3D_SetIndexBufferData(device, buffer, offsetInBytes, data, dataLength, options); }
 
@@ -132,7 +132,7 @@ namespace Microsoft.Xna.Framework.Graphics
 
 		public static void FNA3D_CloneEffect(IntPtr device, IntPtr cloneSource, out IntPtr effect, out IntPtr effectData) { CheckThread(); FNA3D_Impl.FNA3D_CloneEffect(device, cloneSource, out effect, out effectData); }
 
-		public static void FNA3D_AddDisposeEffect(IntPtr device, IntPtr effect) { CheckThread(); FNA3D_Impl.FNA3D_AddDisposeEffect(device, effect); }
+		public static void FNA3D_AddDisposeEffect(IntPtr device, IntPtr effect) { FNA3D_Impl.FNA3D_AddDisposeEffect(device, effect); }
 
 		public static void FNA3D_SetEffectTechnique(IntPtr device, IntPtr effect, IntPtr technique) { CheckThread(); FNA3D_Impl.FNA3D_SetEffectTechnique(device, effect, technique); }
 
@@ -144,7 +144,7 @@ namespace Microsoft.Xna.Framework.Graphics
 
 		public static IntPtr FNA3D_CreateQuery(IntPtr device) { CheckThread(); return FNA3D_Impl.FNA3D_CreateQuery(device); }
 
-		public static void FNA3D_AddDisposeQuery(IntPtr device, IntPtr query) { CheckThread(); FNA3D_Impl.FNA3D_AddDisposeQuery(device, query); }
+		public static void FNA3D_AddDisposeQuery(IntPtr device, IntPtr query) { FNA3D_Impl.FNA3D_AddDisposeQuery(device, query); }
 
 		public static void FNA3D_QueryBegin(IntPtr device, IntPtr query) { CheckThread(); FNA3D_Impl.FNA3D_QueryBegin(device, query); }
 
